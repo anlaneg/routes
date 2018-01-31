@@ -15,3 +15,5 @@ html_coverage
 .tox/
 .eggs/
 .coverage
+.project
+.pydevproject
