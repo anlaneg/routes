@@ -36,7 +36,9 @@ class RoutesMiddleware(object):
             map.connect('blog/*path_info', controller='blog', path_info='')
 
         """
+        #那个回调来处理
         self.app = wsgi_app
+        #记录mapper对象
         self.mapper = mapper
         self.singleton = singleton
         self.use_method_override = use_method_override
@@ -46,6 +48,7 @@ class RoutesMiddleware(object):
             log.debug("Initialized with method overriding = %s, and path "
                       "info altering = %s", use_method_override, path_info)
 
+    #WSGI对应的入口函数
     def __call__(self, environ, start_response):
         """Resolves the URL in PATH_INFO, and uses wsgi.routing_args
         to pass on URL resolver results."""
@@ -55,9 +58,14 @@ class RoutesMiddleware(object):
 
             # In some odd cases, there's no query string
             try:
+                #在浏览器中访问http://localhost:8051/?age=10&hobbies=software&hobbies=tunning，可以在响应的内容中找到：
+                #QUERY_STRING: age=10&hobbies=software&hobbies=tunning
+                #REQUEST_METHOD: GET
+                #QUERY_STRING将返回？号后的内容
                 qs = environ['QUERY_STRING']
             except KeyError:
                 qs = ''
+            #如果QUERY_STRING中指定了‘_method',则以
             if '_method' in qs:
                 req = Request(environ)
                 req.errors = 'ignore'
@@ -89,6 +97,7 @@ class RoutesMiddleware(object):
             match = config.mapper_dict
             route = config.route
         else:
+            #按url进行匹配
             results = self.mapper.routematch(environ=environ)
             if results:
                 match, route = results[0], results[1]
@@ -113,6 +122,7 @@ class RoutesMiddleware(object):
             log.debug("Match dict: %s", match)
 
         url = URLGenerator(self.mapper, environ)
+        #指明怎样的url及match被匹配
         environ['wsgiorg.routing_args'] = ((url), match)
         environ['routes.route'] = route
         environ['routes.url'] = url
@@ -138,6 +148,7 @@ class RoutesMiddleware(object):
             environ['SCRIPT_NAME'] += re.sub(
                 r'^(.*?)/' + re.escape(newpath) + '$', r'\1', oldpath)
 
+        #调用self.app来完成具体的http请求
         response = self.app(environ, start_response)
 
         # Wrapped in try as in rare cases the attribute will be gone already
