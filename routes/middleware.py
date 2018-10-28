@@ -54,6 +54,7 @@ class RoutesMiddleware(object):
         to pass on URL resolver results."""
         old_method = None
         if self.use_method_override:
+            #默认为True
             req = None
 
             # In some odd cases, there's no query string
@@ -91,13 +92,16 @@ class RoutesMiddleware(object):
         # Run the actual route matching
         # -- Assignment of environ to config triggers route matching
         if self.singleton:
+            #默认为单例
             config = request_config()
+            #设置mapper
             config.mapper = self.mapper
+            #此句将导致，加载environ,并执行load函数，按url进行匹配,产生mapper_dic,route结果
             config.environ = environ
             match = config.mapper_dict
             route = config.route
         else:
-            #按url进行匹配
+            #直接按url进行匹配
             results = self.mapper.routematch(environ=environ)
             if results:
                 match, route = results[0], results[1]

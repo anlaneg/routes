@@ -20,6 +20,7 @@ class _RequestConfig(object):
         and set the environ
         """
         if name == 'environ':
+            #如果设置environ，则加载
             self.load_wsgi_environ(value)
             return self.__shared_state.__setattr__(name, value)
         return self.__shared_state.__setattr__(name, value)
@@ -49,6 +50,7 @@ class _RequestConfig(object):
             if 'PATH_INFO' in environ:
                 mapper = self.mapper
                 path = environ['PATH_INFO']
+                #进行匹配
                 result = mapper.routematch(path)
                 if result is not None:
                     self.__shared_state.mapper_dict = result[0]
@@ -59,6 +61,7 @@ class _RequestConfig(object):
         except AttributeError:
             pass
 
+        #设置self.__shared_state.host ???作用是？
         if 'HTTP_X_FORWARDED_HOST' in environ:
             # Apache will add multiple comma separated values to
             # X-Forwarded-Host if there are multiple reverse proxies
@@ -133,11 +136,13 @@ def request_config(original=False):
     Should you want the original object, perhaps to change the callable its
     using or stop this behavior, call request_config(original=True).
     """
+    #仅创建一个obj(无__init__)
     obj = _RequestConfig()
     try:
         if obj.request_local and original is False:
             return getattr(obj, 'request_local')()
     except AttributeError:
+        #初始化request_local,using_request_local属性
         obj.request_local = False
         obj.using_request_local = False
     return _RequestConfig()

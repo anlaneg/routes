@@ -8,7 +8,7 @@ from six.moves.urllib import parse as urlparse
 
 from routes.util import _url_quote as url_quote, _str_encode, as_unicode
 
-
+#路由信息
 class Route(object):
     """The Route object holds a route recognition and generation
     routine.
@@ -46,10 +46,12 @@ class Route(object):
             connect method should be used to add routes.
 
         """
+        #url路径
         self.routepath = routepath
         self.sub_domains = False
         self.prior = None
         self.redirect = False
+        #路由名称
         self.name = name
         self._kargs = kargs
         self.minimization = kargs.pop('_minimize', False)
@@ -153,6 +155,7 @@ class Route(object):
         var_type = ''
         just_started = False
         routelist = []
+        #遍历路由路径中每一个字符
         for char in routepath:
             if char in [':', '*', '{'] and not collecting and not self.static \
                or char in ['{'] and not collecting:

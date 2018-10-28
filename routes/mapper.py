@@ -528,6 +528,7 @@ class Mapper(SubMapperParent):
             kargs['_explicit'] = self.explicit
         if '_minimize' not in kargs:
             kargs['_minimize'] = self.minimization
+        #构造路由信息
         route = self.make_route(*args, **kargs)
 
         # Apply encoding and errors if its not the defaults and the route
@@ -737,11 +738,14 @@ class Mapper(SubMapperParent):
             resultdict, route_obj = m.match('/joe/sixpack')
 
         """
+        #url为空且无environ时报错
         if url is None and not environ:
             raise RoutesException('URL or environ must be provided')
 
+        #默认自environ中提取url
         if url is None:
             url = environ['PATH_INFO']
+        #通过_match产生结果
         result = self._match(url, environ)
         if self.debug:
             return result[0], result[1], result[2]
